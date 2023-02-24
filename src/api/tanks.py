@@ -47,7 +47,7 @@ def delete(tank_id: int, tanks_service: TanksService = Depends()):
     return tanks_service.delete(tank_id)
 
 
-@router.get('/{tank_id, new_capacity}', response_model=TankResponse, name="Обновить значение capacity")
+@router.get('/{tank_id}/{new_capacity}', response_model=TankResponse, name="Обновить значение capacity")
 def new_capacity(tank_id: int, new_capacity: float, tanks_service: TanksService = Depends()):
     tank = get_with_check(tank_id, tanks_service)
     tank.current_capacity = new_capacity
