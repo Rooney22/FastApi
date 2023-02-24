@@ -73,7 +73,7 @@ class OperationsService:
         )
         return operations
 
-    def get_report_list(self, tank_id: int, product_id: int, date_start: datetime, date_end: datetime):
+    def get_report(self, tank_id: int, product_id: int, date_start: datetime, date_end: datetime):
         operations = (
             self.session
             .query(Operation)
@@ -85,4 +85,25 @@ class OperationsService:
             )
             .all()
         )
-        return operations
+        output = StringIO()
+        data = []
+        for operation in operations:
+            data.append({
+                'id': operation.id,
+                'mass': operation.mass,
+                'date_start': operation.date_start,
+                'date_end': operation.date_end,
+                'tank_id': operation.tank_id,
+                'product_id': operation.product_id,
+                'created_at': operation.created_at,
+                'created_by': operation.created_by,
+                'modified_at': operation.modified_at,
+                'modified_by': operation.modified_by,
+            })
+        print(data)
+        writer = csv.DictWriter(output, fieldnames=data[0].keys())
+        writer.writeheader()
+        for obj in data:
+            writer.writerow(obj)
+        output.seek(0)
+        return output

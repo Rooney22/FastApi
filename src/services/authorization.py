@@ -21,7 +21,8 @@ class AuthorizationService:
         payload = {
             'iat': now,
             'exp': now + timedelta(seconds=settings.jwt_expires_seconds),
-            'sub': str(user_id) + ' ' + str(user_role),
+            'sub': user_id,
+            'role': user_role,
         }
         token = jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
         return JwtToken(access_token=token)
@@ -33,7 +34,7 @@ class AuthorizationService:
         except JWTError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Некорректный токен")
 
-        return payload.get('sub').split(' ')
+        return [payload.get('sub'), payload.get('role')]
 
     def register(self, user_schema: UserRequest) -> None:
         user = User(
@@ -55,7 +56,7 @@ class AuthorizationService:
             return None
         if not check_password(password_text, user.password_hashed):
             return None
-        return self.create_token(user.id, user.role     )
+        return self.create_token(user.id, user.role)
 
 
 oauth2_schema = OAuth2PasswordBearer(tokenUrl='/authorization/authorize')

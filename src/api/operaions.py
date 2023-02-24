@@ -7,7 +7,6 @@ from src.models.schemas.operation.operationjoin_response import OperationJoinRes
 from src.models.schemas.operation.operation_request import OperationRequest
 from src.services.operations import OperationsService
 from src.services.tanks import TanksService
-from src.services.files import FilesService
 from src.services.authorization import get_current_user_data
 
 
@@ -58,10 +57,8 @@ def get_operations(tank_id: int, operations_service: OperationsService = Depends
     return operations_service.get_operations(tank_id)
 
 
-@router.get('/{tank_id, product_id, date_start, date_end}', name='Создать отчёт по параметрам')
-def get_report(tank_id: int, product_id: int, date_start: datetime, date_end: datetime,
-               files_service: FilesService = Depends(), operations_service: OperationsService = Depends()):
-    operations = operations_service.get_report_list(tank_id, product_id, date_start, date_end)
-    report = files_service.download_report(operations)
+@router.get('/download/{tank_id}', name='Создать отчёт по параметрам')
+def get_report(tank_id: int, product_id: int, date_start: datetime, date_end: datetime, operations_service: OperationsService = Depends()):
+    report = operations_service.get_report(tank_id, product_id, date_start, date_end)
     return StreamingResponse(report, media_type='text/csv',
-                             headers={'Content-Disposition': 'attachment; filename=report.csv'})
+                             headers={"Content-Disposition": "attachment; filename=report.csv"})

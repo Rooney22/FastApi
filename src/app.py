@@ -30,12 +30,10 @@ def admin_registration() -> None:
 
 
 app = FastAPI(
-    title="Мое первое приложение FastAPI",
-    description="Первое приложение",
+    title="Знаев Алексей. BackendFastAPI",
+    description="Домашнее задание",
     version="0.0.1",
     on_startup=admin_registration()
 )
-
-
 
 app.include_router(router)
